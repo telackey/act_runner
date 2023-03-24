@@ -21,7 +21,7 @@ if [[ ! -s .runner ]]; then
   if [[ -z ${GITEA_RUNNER_REGISTRATION_TOKEN:-} ]]; then
     read -r GITEA_RUNNER_REGISTRATION_TOKEN < "$GITEA_RUNNER_REGISTRATION_TOKEN_FILE"
   fi
-  /opt/act/act_runner register \
+  act_runner register \
     --instance "${GITEA_INSTANCE_URL}" \
     --token    "${GITEA_RUNNER_REGISTRATION_TOKEN}" \
     --name     "${GITEA_RUNNER_NAME}" \
@@ -30,4 +30,4 @@ if [[ ! -s .runner ]]; then
     --no-interactive
 fi
 
-/opt/act/act_runner daemon
+act_runner daemon
