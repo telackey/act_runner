@@ -79,6 +79,7 @@ func NewTask(forgeInstance string, buildID int64, client client.Client, runnerEn
 		Input: &TaskInput{
 			envs:                 runnerEnvs,
 			containerNetworkMode: "bridge", // TODO should be configurable
+			privileged:           true,     // TODO should be configurable
 		},
 		BuildID: buildID,
 
