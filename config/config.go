@@ -32,14 +32,17 @@ type (
 	}
 
 	Runner struct {
-		UUID     string            `ignored:"true"`
-		Name     string            `envconfig:"GITEA_RUNNER_NAME"`
-		Token    string            `ignored:"true"`
-		Capacity int               `envconfig:"GITEA_RUNNER_CAPACITY" default:"1"`
-		File     string            `envconfig:"GITEA_RUNNER_FILE" default:".runner"`
-		Environ  map[string]string `envconfig:"GITEA_RUNNER_ENVIRON"`
-		EnvFile  string            `envconfig:"GITEA_RUNNER_ENV_FILE"`
-		Labels   []string          `envconfig:"GITEA_RUNNER_LABELS"`
+		UUID                   string            `ignored:"true"`
+		Name                   string            `envconfig:"GITEA_RUNNER_NAME"`
+		Token                  string            `ignored:"true"`
+		Capacity               int               `envconfig:"GITEA_RUNNER_CAPACITY" default:"1"`
+		File                   string            `envconfig:"GITEA_RUNNER_FILE" default:".runner"`
+		Environ                map[string]string `envconfig:"GITEA_RUNNER_ENVIRON"`
+		EnvFile                string            `envconfig:"GITEA_RUNNER_ENV_FILE"`
+		Labels                 []string          `envconfig:"GITEA_RUNNER_LABELS"`
+		DockerContainerOptions string            `envconfig:"GITEA_RUNNER_DOCKER_CONTAINER_OPTIONS"`
+		DockerNetworkMode      string            `envconfig:"GITEA_RUNNER_DOCKER_NETWORK_MODE" default:"bridge"`
+		DockerPrivileged       bool              `envconfig:"GITEA_RUNNER_DOCKER_PRIVILEGED" default:"false"`
 	}
 
 	Platform struct {
@@ -83,6 +86,15 @@ func FromEnviron() (Config, error) {
 		if runner.Insecure != "" {
 			cfg.Client.Insecure, _ = strconv.ParseBool(runner.Insecure)
 		}
+		if runner.DockerPrivileged != "" {
+			cfg.Runner.DockerPrivileged, _ = strconv.ParseBool(runner.DockerPrivileged)
+		}
+		if runner.DockerContainerOptions != "" {
+			cfg.Runner.DockerContainerOptions = runner.DockerContainerOptions
+		}
+		if runner.DockerNetworkMode != "" {
+			cfg.Runner.DockerNetworkMode = runner.DockerNetworkMode
+		}
 	} else if err != nil {
 		return cfg, err
 	}
@@ -96,6 +108,10 @@ func FromEnviron() (Config, error) {
 	}
 	if cfg.Runner.Name == "" {
 		cfg.Runner.Name, _ = os.Hostname()
+	}
+
+	if cfg.Runner.DockerNetworkMode == "" {
+		cfg.Runner.DockerNetworkMode = "bridge"
 	}
 
 	// platform config

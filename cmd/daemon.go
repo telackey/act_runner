@@ -69,13 +69,15 @@ func runDaemon(ctx context.Context, envFile string) func(cmd *cobra.Command, arg
 		)
 
 		runner := &runtime.Runner{
-			Client:        cli,
-			Machine:       cfg.Runner.Name,
-			ForgeInstance: cfg.Client.Address,
-			Environ:       cfg.Runner.Environ,
-			Labels:        cfg.Runner.Labels,
-			Version:       version,
-			CacheHandler:  handler,
+			Client:                 cli,
+			Machine:                cfg.Runner.Name,
+			ForgeInstance:          cfg.Client.Address,
+			Environ:                cfg.Runner.Environ,
+			Labels:                 cfg.Runner.Labels,
+			Version:                version,
+			CacheHandler:           handler,
+			DockerContainerOptions: cfg.Runner.DockerContainerOptions,
+			DockerPrivileged:       cfg.Runner.DockerPrivileged,
 		}
 
 		poller := poller.New(

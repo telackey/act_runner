@@ -52,6 +52,7 @@ type TaskInput struct {
 	useGitIgnore     bool
 	containerCapAdd  []string
 	containerCapDrop []string
+	containerOptions string
 	// autoRemove         bool
 	artifactServerPath string
 	artifactServerPort string
@@ -74,13 +75,10 @@ type Task struct {
 }
 
 // NewTask creates a new task
-func NewTask(forgeInstance string, buildID int64, client client.Client, runnerEnvs map[string]string, picker func([]string) string) *Task {
+func NewTask(forgeInstance string, buildID int64, client client.Client, taskInput *TaskInput, picker func([]string) string) *Task {
+	client.Insecure()
 	task := &Task{
-		Input: &TaskInput{
-			envs:                 runnerEnvs,
-			containerNetworkMode: "bridge", // TODO should be configurable
-			privileged:           true,     // TODO should be configurable
-		},
+		Input:   taskInput,
 		BuildID: buildID,
 
 		client:         client,
@@ -233,6 +231,7 @@ func (t *Task) Run(ctx context.Context, task *runnerv1.Task, runnerName, runnerV
 		GitHubInstance:        t.client.Address(),
 		ContainerCapAdd:       input.containerCapAdd,
 		ContainerCapDrop:      input.containerCapDrop,
+		ContainerOptions:      input.containerOptions,
 		AutoRemove:            true,
 		ArtifactServerPath:    input.artifactServerPath,
 		ArtifactServerPort:    input.artifactServerPort,

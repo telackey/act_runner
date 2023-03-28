@@ -16,13 +16,16 @@ import (
 
 // Runner runs the pipeline.
 type Runner struct {
-	Machine       string
-	Version       string
-	ForgeInstance string
-	Environ       map[string]string
-	Client        client.Client
-	Labels        []string
-	CacheHandler  *artifactcache.Handler
+	Machine                string
+	Version                string
+	ForgeInstance          string
+	Environ                map[string]string
+	Client                 client.Client
+	Labels                 []string
+	CacheHandler           *artifactcache.Handler
+	DockerNetworkMode      string
+	DockerContainerOptions string
+	DockerPrivileged       bool
 }
 
 // Run runs the pipeline stage.
@@ -32,7 +35,13 @@ func (s *Runner) Run(ctx context.Context, task *runnerv1.Task) error {
 		env[k] = v
 	}
 	env["ACTIONS_CACHE_URL"] = s.CacheHandler.ExternalURL() + "/"
-	return NewTask(s.ForgeInstance, task.Id, s.Client, env, s.platformPicker).Run(ctx, task, s.Machine, s.Version)
+	taskInput := &TaskInput{
+		envs:                 env,
+		containerNetworkMode: s.DockerNetworkMode,
+		privileged:           s.DockerPrivileged,
+		containerOptions:     s.DockerContainerOptions,
+	}
+	return NewTask(s.ForgeInstance, task.Id, s.Client, taskInput, s.platformPicker).Run(ctx, task, s.Machine, s.Version)
 }
 
 func (s *Runner) platformPicker(labels []string) string {

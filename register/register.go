@@ -46,13 +46,16 @@ func (p *Register) Register(ctx context.Context, cfg config.Runner) (*core.Runne
 	}
 
 	data := &core.Runner{
-		ID:       resp.Msg.Runner.Id,
-		UUID:     resp.Msg.Runner.Uuid,
-		Name:     resp.Msg.Runner.Name,
-		Token:    resp.Msg.Runner.Token,
-		Address:  p.Client.Address(),
-		Insecure: strconv.FormatBool(p.Client.Insecure()),
-		Labels:   cfg.Labels,
+		ID:                     resp.Msg.Runner.Id,
+		UUID:                   resp.Msg.Runner.Uuid,
+		Name:                   resp.Msg.Runner.Name,
+		Token:                  resp.Msg.Runner.Token,
+		Address:                p.Client.Address(),
+		Insecure:               strconv.FormatBool(p.Client.Insecure()),
+		Labels:                 cfg.Labels,
+		DockerNetworkMode:      cfg.DockerNetworkMode,
+		DockerContainerOptions: cfg.DockerContainerOptions,
+		DockerPrivileged:       strconv.FormatBool(cfg.DockerPrivileged),
 	}
 
 	file, err := json.MarshalIndent(data, "", "  ")
